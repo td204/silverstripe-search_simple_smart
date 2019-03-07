@@ -77,8 +77,8 @@ class SearchEngineMakeSearchable extends DataExtension
     public function SearchEngineKeywordDataObjectMatches($level = 1)
     {
         $item = SearchEngineDataObject::find_or_make($this->owner);
-        $field = "SearchEngineKeywords_Level".$level;
-        return $item->$field();
+        $field = "SearchEngineKeywords_Level" . $level;
+        return $item->{$field}();
     }
 
     /**
@@ -97,16 +97,16 @@ class SearchEngineMakeSearchable extends DataExtension
             $template = Config::inst()->get($this->owner->ClassName, "search_engine_results_templates");
             if ($template) {
                 if ($moreDetails) {
-                    return array($template."_MoreDetails", $template);
+                    return array($template . "_MoreDetails", $template);
                 } else {
                     return array($template);
                 }
             } else {
                 $arrayOfTemplates = array();
                 $parentClasses = class_parents($this->owner);
-                $firstTemplate = "SearchEngineResultItem_".$this->owner->ClassName;
+                $firstTemplate = "SearchEngineResultItem_" . $this->owner->ClassName;
                 if ($moreDetails) {
-                    $arrayOfTemplates = array($firstTemplate."_MoreDetails", $firstTemplate);
+                    $arrayOfTemplates = array($firstTemplate . "_MoreDetails", $firstTemplate);
                 } else {
                     $arrayOfTemplates = array($firstTemplate);
                 }
@@ -115,12 +115,12 @@ class SearchEngineMakeSearchable extends DataExtension
                         break;
                     }
                     if ($moreDetails) {
-                        $arrayOfTemplates[]= "SearchEngineResultItem_".$parent."_MoreDetails";
+                        $arrayOfTemplates[] = "SearchEngineResultItem_" . $parent . "_MoreDetails";
                     }
-                    $arrayOfTemplates[]= "SearchEngineResultItem_".$parent;
+                    $arrayOfTemplates[] = "SearchEngineResultItem_" . $parent;
                 }
                 if ($moreDetails) {
-                    $arrayOfTemplates[]= "SearchEngineResultItem_DataObject_MoreDetails";
+                    $arrayOfTemplates[] = "SearchEngineResultItem_DataObject_MoreDetails";
                 }
                 $arrayOfTemplates[] = "SearchEngineResultItem_DataObject";
                 return $arrayOfTemplates;
@@ -144,7 +144,7 @@ class SearchEngineMakeSearchable extends DataExtension
         }
     }
 
-    public function updateCMSFields(FieldList $fields)
+    function updateCMSFields(FieldList $fields)
     {
         if (SiteConfig::current_site_config()->SearchEngineDebug || Permission::check("SEARCH_ENGINE_ADMIN")) {
             if ($fields->fieldByName("Root")) {
@@ -157,7 +157,7 @@ class SearchEngineMakeSearchable extends DataExtension
         }
     }
 
-    public function updateSettingsFields(FieldList $fields)
+    function updateSettingsFields(FieldList $fields)
     {
         if (SiteConfig::current_site_config()->SearchEngineDebug || Permission::check("SEARCH_ENGINE_ADMIN")) {
             if ($this->SearchEngineExcludeFromIndex()) {
@@ -225,14 +225,14 @@ class SearchEngineMakeSearchable extends DataExtension
                 $str .= "<li><strong>$level</strong><ul>";
                 foreach ($fieldArray as $field) {
                     if (isset($fieldLabels[$field])) {
-                        $title = $fieldLabels[$field]." [". $field ."]";
+                        $title = $fieldLabels[$field] . " [" . $field . "]";
                     } else {
                         $title = "$field";
                     }
                     if ($includeExample) {
                         $fields = explode(".", $field);
-                        $data = " ".$this->searchEngineRelObject($this->owner, $fields);
-                        $str .= "<li> - <strong>$title</strong> <em>".$data."</em></li>";
+                        $data = " " . $this->searchEngineRelObject($this->owner, $fields);
+                        $str .= "<li> - <strong>$title</strong> <em>" . $data . "</em></li>";
                     } else {
                         $str .= "<li> - $title</li>";
                     }
@@ -241,6 +241,7 @@ class SearchEngineMakeSearchable extends DataExtension
                 //$str .= "<li>results in: <em>".$this->SearchEngineFullContentForIndexing()[$level]."</em></li></ol>";
             }
             $str .= "</ul>";
+
         } else {
             $str = _t("MakeSearchable.NO_FIElDS", "<p>No fields are listed for indexing.</p>");
         }
@@ -321,10 +322,15 @@ class SearchEngineMakeSearchable extends DataExtension
             $item = SearchEngineDataObject::find_or_make($this->owner);
             if ($item && $this->_onAfterWriteCount++ < 2) {
                 $item->write();
-                DB::query("UPDATE \"SearchEngineDataObject\" SET LastEdited = NOW() WHERE ID = ".(intval($item->ID)-0).";");
+                DB::query("UPDATE \"SearchEngineDataObject\" SET LastEdited = NOW() WHERE ID = " . (intval($item->ID) - 0) . ";");
                 SearchEngineDataObjectToBeIndexed::add($item);
             }
         }
+    }
+
+    public static function getExcludedClasses()
+    {
+        return Config::inst()->get("SearchEngineDataObject", "classes_to_exclude");
     }
 
     /**
@@ -333,7 +339,7 @@ class SearchEngineMakeSearchable extends DataExtension
     public function SearchEngineExcludeFromIndex()
     {
         $exclude = false;
-        $alwaysExclude = Config::inst()->get("SearchEngineDataObject", "classes_to_exclude");
+        $alwaysExclude = SearchEngineMakeSearchable::getExcludedClasses();
         if (in_array($this->owner->ClassName, $alwaysExclude)) {
             $exclude = true;
         } else {
@@ -430,7 +436,7 @@ class SearchEngineMakeSearchable extends DataExtension
                     if (is_array($fieldArray) && count($fieldArray)) {
                         foreach ($fieldArray as $field) {
                             $fields = explode(".", $field);
-                            $finalArray[$level] .= " ".$this->searchEngineRelObject($this->owner, $fields);
+                            $finalArray[$level] .= " " . $this->searchEngineRelObject($this->owner, $fields);
                         }
                     }
                 }
@@ -456,30 +462,28 @@ class SearchEngineMakeSearchable extends DataExtension
             //db field
             if (isset($dbArray[$fields[0]])) {
                 if ($fieldCount == 1) {
-                    $str .= $object->$fields[0]." ";
+                    $str .= $object->{$fields[0]} . " ";
                 } elseif ($fieldCount == 2) {
                     $method = $fields[1];
-                    $str .= $this->owner->dbObject($fields[0])->$method()." ";
+                    $str .= $this->owner->dbObject($fields[0])->{$method}() . " ";
                 }
-            }
-            //has one relation
+            } //has one relation
             else {
                 $method = array_shift($fields);
                 $hasOneArray = $this->searchEngineRelFields($object, "has_one");
                 if (isset($hasOneArray[$method])) {
-                    $foreignObject = $this->owner->$method();
-                    $str .= $this->searchEngineRelObject($foreignObject, $fields, $str)." ";
-                }
-                //many relation
+                    $foreignObject = $this->owner->{$method}();
+                    $str .= $this->searchEngineRelObject($foreignObject, $fields, $str) . " ";
+                } //many relation
                 else {
                     $manyArray = array_merge(
                         $this->searchEngineRelFields($object, "has_many"),
                         $this->searchEngineRelFields($object, "many_many")
                     );
                     if (isset($manyArray[$method])) {
-                        $foreignObjects = $this->owner->$method()->limit(100);
+                        $foreignObjects = $this->owner->{$method}()->limit(100);
                         foreach ($foreignObjects as $foreignObject) {
-                            $str .= $this->searchEngineRelObject($foreignObject, $fields)." ";
+                            $str .= $this->searchEngineRelObject($foreignObject, $fields) . " ";
                         }
                     }
                 }
@@ -509,8 +513,9 @@ class SearchEngineMakeSearchable extends DataExtension
             $this->_array_of_relations[$object->ClassName] = array();
         }
         if (!isset($this->_array_of_relations[$object->ClassName][$relType])) {
-            $this->_array_of_relations[$object->ClassName][$relType] = $object->$relType();
+            $this->_array_of_relations[$object->ClassName][$relType] = $object->{$relType}();
         }
         return $this->_array_of_relations[$object->ClassName][$relType];
     }
+
 }
