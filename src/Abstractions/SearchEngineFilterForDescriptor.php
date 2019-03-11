@@ -85,7 +85,7 @@ abstract class SearchEngineFilterForDescriptor
      * retains debug information if turned on.
      * @var array
      */
-    protected $debugArray = array();
+    protected $debugArray = [];
 
     /**
      * @return string (html)
