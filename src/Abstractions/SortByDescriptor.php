@@ -4,17 +4,23 @@ namespace Sunnysideup\SearchSimpleSmart\Abstractions;
 
 use SilverStripe\Core\Config\Config;
 use Sunnysideup\SearchSimpleSmart\Abstractions\SearchEngineSortByDescriptor;
+use SilverStripe\View\ViewableData;
 
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Core\Extensible;
+/***
+ * This is an interface that can be added
+ * to any DataObject that is
+ *
+ *
+ */
+
 
 abstract class SearchEngineSortByDescriptor
 {
 
-    use Extensible;
-    use Injectable;
-    use Configurable;
+
+    // use Extensible;
+    // use Injectable;
+    // use Configurable;
 
     /**
      * this is a metasorter, allowing you to always
@@ -97,10 +103,29 @@ abstract class SearchEngineSortByDescriptor
                 if (!isset($classGroupCounts[$key])) {
                     $classGroupCounts[$key] = 0;
                 }
+
                 foreach ($array as $id => $className) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: upgrade to SS4
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                     if (in_array($className, $classGroupGroup)) {
                         if ((!isset($classGroupLimits[$key]))  || (isset($classGroupLimits[$key]) && ($classGroupCounts[$key] <= $classGroupLimits[$key]))) {
                             $classGroupCounts[$key]++;
+
+                            /**
+                              * ### @@@@ START REPLACEMENT @@@@ ###
+                              * WHY: upgrade to SS4
+                              * OLD: $className (case sensitive)
+                              * NEW: $className (COMPLEX)
+                              * EXP: Check if the class name can still be used as such
+                              * ### @@@@ STOP REPLACEMENT @@@@ ###
+                              */
                             $newArray[$id] = $className;
                         }
                         unset($array[$id]);
@@ -108,7 +133,24 @@ abstract class SearchEngineSortByDescriptor
                 }
             }
 
+            /**
+              * ### @@@@ START REPLACEMENT @@@@ ###
+              * WHY: upgrade to SS4
+              * OLD: $className (case sensitive)
+              * NEW: $className (COMPLEX)
+              * EXP: Check if the class name can still be used as such
+              * ### @@@@ STOP REPLACEMENT @@@@ ###
+              */
             foreach ($array as $id => $className) {
+
+/**
+  * ### @@@@ START REPLACEMENT @@@@ ###
+  * WHY: upgrade to SS4
+  * OLD: $className (case sensitive)
+  * NEW: $className (COMPLEX)
+  * EXP: Check if the class name can still be used as such
+  * ### @@@@ STOP REPLACEMENT @@@@ ###
+  */
                 $newArray[$id] = $className;
             }
             return $newArray;

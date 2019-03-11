@@ -2,16 +2,23 @@
 
 namespace Sunnysideup\SearchSimpleSmart\Abstractions;
 
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Core\Extensible;
+use SilverStripe\View\ViewableData;
+
+/***
+ * This is an interface that can be added
+ * to any DataObject that is
+ *
+ *
+ */
+
+
 
 abstract class SearchEngineFilterForDescriptor
 {
 
-    use Extensible;
-    use Injectable;
-    use Configurable;
+    // use Extensible;
+    // use Injectable;
+    // use Configurable;
 
     /**
      * returns the name - e.g. "Pages Only", "Files Only"
