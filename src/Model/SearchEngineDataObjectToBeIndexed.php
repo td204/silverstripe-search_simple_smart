@@ -188,6 +188,7 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
     public static function add(SearchEngineDataObject $searchEngineDataObject, $alsoIndex = true)
     {
         if ($searchEngineDataObject && $searchEngineDataObject->exists()) {
+<<<<<<< HEAD
             $fieldArray = [
                 'SearchEngineDataObjectID' => $searchEngineDataObject->ID,
                 'Completed' => 0,
@@ -208,6 +209,30 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
                 //do it immediately...
                 if ($alsoIndex) {
                     $objToBeIndexedRecord->IndexNow($searchEngineDataObject);
+=======
+            if (! isset(self::$_cache_for_items[$searchEngineDataObject->ID])) {
+                $fieldArray = [
+                    'SearchEngineDataObjectID' => $searchEngineDataObject->ID,
+                    'Completed' => 0,
+                ];
+                $objToBeIndexedRecord = DataObject::get_one(
+                    self::class,
+                    $fieldArray
+                );
+                if ($objToBeIndexedRecord && $objToBeIndexedRecord->exists()) {
+                    //do nothing
+                } else {
+                    $objToBeIndexedRecord = self::create($fieldArray);
+                    $objToBeIndexedRecord->write();
+                }
+                if (Config::inst()->get(self::class, 'cron_job_running') || Director::isDev()) {
+                    //cron will take care of it...
+                } else {
+                    //do it immediately...
+                    if ($alsoIndex) {
+                        $objToBeIndexedRecord->IndexNow($searchEngineDataObject);
+                    }
+>>>>>>> refs/rewritten/master-5
                 }
             }
 
