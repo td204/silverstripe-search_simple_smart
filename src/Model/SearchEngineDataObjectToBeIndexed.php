@@ -3,14 +3,15 @@
 namespace Sunnysideup\SearchSimpleSmart\Model;
 
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
-use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
 use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\Security\Member;
+use SilverStripe\ORM\DataList;
 use SilverStripe\Security\Permission;
+use SilverStripe\Security\Member;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Control\Director;
 
 /**
  * presents a list of dataobjects
@@ -18,13 +19,11 @@ use SilverStripe\Security\Permission;
  *
  * Once they have been indexed, they will be removed again.
  */
+
 class SearchEngineDataObjectToBeIndexed extends DataObject
 {
-    protected static $_cache_for_items = [];
-
     /**
-     * Defines the database table name.
-     *
+     * Defines the database table name
      * @var string
      */
     private static $table_name = 'SearchEngineDataObjectToBeIndexed';
@@ -84,8 +83,7 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
     ];
 
     /**
-     * Defines a default list of filters for the search context.
-     *
+     * Defines a default list of filters for the search context
      * @var array
      */
     private static $searchable_fields = [
@@ -111,10 +109,11 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
      * you must set this to true once you have your cron job
      * up and running.
      * The cron job runs this task every ?? minutes.
-     *
      * @var bool
      */
     private static $cron_job_running = false;
+
+    private static $_cache_for_items = [];
 
     public function i18n_singular_name()
     {
@@ -128,9 +127,9 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
 
     /**
      * @param Member $member
-     * @param mixed  $context
-     *
-     * @return bool
+     * @param array $context Additional context-specific data which might
+     * affect whether (or where) this object could be created.
+     * @return boolean
      */
     public function canCreate($member = null, $context = [])
     {
@@ -139,8 +138,9 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
 
     /**
      * @param Member $member
-     *
-     * @return bool
+     * @param array $context Additional context-specific data which might
+     * affect whether (or where) this object could be created.
+     * @return boolean
      */
     public function canEdit($member = null)
     {
@@ -149,8 +149,9 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
 
     /**
      * @param Member $member
-     *
-     * @return bool
+     * @param array $context Additional context-specific data which might
+     * affect whether (or where) this object could be created.
+     * @return boolean
      */
     public function canDelete($member = null)
     {
@@ -159,8 +160,9 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
 
     /**
      * @param Member $member
-     *
-     * @return bool
+     * @param array $context Additional context-specific data which might
+     * affect whether (or where) this object could be created.
+     * @return boolean
      */
     public function canView($member = null)
     {
@@ -169,25 +171,21 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
 
     /**
      * @casted variable
-     *
      * @return string
      */
     public function getTitle()
     {
         if ($this->SearchEngineDataObjectID) {
-            $obj = $this->SearchEngineDataObject();
-            if ($obj) {
+            if ($obj = $this->SearchEngineDataObject()) {
                 return $obj->getTitle();
             }
         }
-
         return 'ERROR';
     }
 
     /**
-     * @param mixed $alsoIndex
-     *
-     * @return null|SearchEngineDataObjectToBeIndexed
+     * @param SearchEngineDataObject $searchEngineDataObject
+     * @return SearchEngineDataObjectToBeIndexed
      */
     public static function add(SearchEngineDataObject $searchEngineDataObject, $alsoIndex = true)
     {
@@ -207,23 +205,20 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
                     $objToBeIndexedRecord = self::create($fieldArray);
                     $objToBeIndexedRecord->write();
                 }
-
                 //we do not want this on DEV
-                if (Config::inst()->get(self::class, 'cron_job_running')) {
+                if (Config::inst()->get(self::class, 'cron_job_running') && Director::isDev() === false) {
                     //cron will take care of it...
-                } elseif ($alsoIndex) {
-                    $objToBeIndexedRecord->IndexNow($searchEngineDataObject);
+                } else {
+                    //do it immediately...
+                    if ($alsoIndex) {
+                        $objToBeIndexedRecord->IndexNow($searchEngineDataObject);
+                    }
                 }
-
                 self::$_cache_for_items[$searchEngineDataObject->ID] = $objToBeIndexedRecord;
             }
-
             return self::$_cache_for_items[$searchEngineDataObject->ID];
         }
-
         user_error('The SearchEngineDataObject needs to exist');
-
-        return null;
     }
 
     public function IndexNow(SearchEngineDataObject $searchEngineDataObject = null)
@@ -231,7 +226,6 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
         if (! $searchEngineDataObject) {
             $searchEngineDataObject = $this->SearchEngineDataObject();
         }
-
         if ($searchEngineDataObject && $searchEngineDataObject->exists() && $searchEngineDataObject instanceof SearchEngineDataObject) {
             $sourceObject = $searchEngineDataObject->SourceObject();
             if ($sourceObject && $sourceObject->exists()) {
@@ -248,11 +242,8 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
     }
 
     /**
-     * returns all the items that are more than five minutes old.
-     *
-     * @param bool  $oldOnesOnly
-     * @param mixed $limit
-     *
+     * returns all the items that are more than five minutes old
+     * @param bool $oldOnesOnly
      * @return DataList
      */
     public static function to_run($oldOnesOnly = false, $limit = 10)
@@ -261,8 +252,7 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
             ->exclude(['SearchEngineDataObjectID' => 0])
             ->filter(['Completed' => 0])
             ->sort(DB::get_conn()->random() . ' ASC')
-            ->limit($limit)
-        ;
+            ->limit($limit);
 
         if ($oldOnesOnly) {
             $objects = $objects->where('UNIX_TIMESTAMP("Created") < ' . strtotime('5 minutes ago'));
@@ -272,15 +262,23 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
     }
 
     /**
-     * CMS Fields.
-     *
+     * Event handler called before deleting from the database.
+     */
+    public function onBeforeDelete()
+    {
+        $this->flushCache();
+        parent::onBeforeDelete();
+        $this->flushCache();
+    }
+
+    /**
+     * CMS Fields
      * @return FieldList
      */
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        $obj = $this->SearchEngineDataObject();
-        if ($obj) {
+        if ($obj = $this->SearchEngineDataObject()) {
             $fields->replaceField(
                 'SearchEngineDataObjectID',
                 ReadonlyField::create(
@@ -295,15 +293,5 @@ class SearchEngineDataObjectToBeIndexed extends DataObject
         }
 
         return $fields;
-    }
-
-    /**
-     * Event handler called before deleting from the database.
-     */
-    protected function onBeforeDelete()
-    {
-        $this->flushCache();
-        parent::onBeforeDelete();
-        $this->flushCache();
     }
 }
