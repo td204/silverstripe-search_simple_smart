@@ -75,7 +75,7 @@ class SearchEngineMakeSearchable extends DataExtension {
 	public function SearchEngineKeywordDataObjectMatches($level = 1){
 		$item = SearchEngineDataObject::find_or_make($this->owner);
 		$field = "SearchEngineKeywords_Level".$level;
-		return $item->$field();
+		return $item->{$field}();
 	}
 
 	/**
@@ -456,11 +456,11 @@ class SearchEngineMakeSearchable extends DataExtension {
 			//db field
 			if(isset($dbArray[$fields[0]])) {
 				if($fieldCount == 1) {
-					$str .= $object->$fields[0]." ";
+					$str .= $object->{$fields[0]}." ";
 				}
 				elseif($fieldCount == 2) {
 					$method = $fields[1];
-					$str .= $this->owner->dbObject($fields[0])->$method()." ";
+					$str .= $this->owner->dbObject($fields[0])->{$method}()." ";
 				}
 			}
 			//has one relation
@@ -468,7 +468,7 @@ class SearchEngineMakeSearchable extends DataExtension {
 				$method = array_shift($fields);
 				$hasOneArray = $this->searchEngineRelFields($object, "has_one");
 				if(isset($hasOneArray[$method])) {
-					$foreignObject = $this->owner->$method();
+					$foreignObject = $this->owner->{$method}();
 					$str .= $this->searchEngineRelObject($foreignObject, $fields, $str)." ";
 				}
 				//many relation
@@ -478,7 +478,7 @@ class SearchEngineMakeSearchable extends DataExtension {
 						$this->searchEngineRelFields($object, "many_many")
 					);
 					if(isset($manyArray[$method])) {
-						$foreignObjects = $this->owner->$method()->limit(100);
+						$foreignObjects = $this->owner->{$method}()->limit(100);
 						foreach($foreignObjects as $foreignObject) {
 							$str .= $this->searchEngineRelObject($foreignObject, $fields)." ";
 						}
@@ -509,7 +509,7 @@ class SearchEngineMakeSearchable extends DataExtension {
 			$this->_array_of_relations[$object->ClassName] = array();
 		}
 		if(!isset($this->_array_of_relations[$object->ClassName][$relType])) {
-			$this->_array_of_relations[$object->ClassName][$relType] = $object->$relType();
+			$this->_array_of_relations[$object->ClassName][$relType] = $object->{$relType}();
 		}
 		return $this->_array_of_relations[$object->ClassName][$relType];
 	}

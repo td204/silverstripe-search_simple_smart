@@ -196,13 +196,13 @@ class SearchEngineFullContent extends DataObject {
 			//remove All previous entries
 			$this->Level = SearchEngineKeyword::level_sanitizer($this->Level);
 			$methodName = "SearchEngineKeywords_Level".$this->Level;
-			$item->$methodName()->removeAll();
+			$item->{$methodName}()->removeAll();
 			//add all keywords
 			foreach($fullArray as $keywordObjectID => $arrayItems) {
 				$keywordObject = $arrayItems["Object"];
 				$count = $arrayItems["Count"];
 				$methodName = "SearchEngineDataObjects_Level".$this->Level;
-				$keywordObject->$methodName()->add($item, array("Count" => $count));
+				$keywordObject->{$methodName}()->add($item, array("Count" => $count));
 			}
 		}
 	}

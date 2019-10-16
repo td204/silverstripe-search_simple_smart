@@ -75,7 +75,7 @@ class SearchEngineSearchRecordHistory extends DataObject {
 		$obj = self::get_latest_search();
 		if($obj) {
 			foreach($fieldArray as $field => $value) {
-				$obj->$field = $value;
+				$obj->{$field} = $value;
 			}
 		}
 		else {

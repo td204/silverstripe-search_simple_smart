@@ -256,14 +256,14 @@ class SearchEngineSearchRecord extends DataObject implements Flushable {
 	function setListOfIDs($list, $filterStep){
 		$field = $this->getListIDField($filterStep);
 		if($list && $list instanceof SS_List && $list->count()) {
-			$this->$field = implode(",",$list->map("ID", "ID")->toArray());
+			$this->{$field} = implode(",",$list->map("ID", "ID")->toArray());
 		}
 		else {
-			$this->$field = "-1";
+			$this->{$field} = "-1";
 		}
 		$this->listOfIDsUpdateOnly = true;
 		$this->write();
-		return $this->$field;
+		return $this->{$field};
 	}
 
 	/**
@@ -275,8 +275,8 @@ class SearchEngineSearchRecord extends DataObject implements Flushable {
 	 */
 	function getListOfIDs($filterStep){
 		$field = $this->getListIDField($filterStep);
-		if($this->$field) {
-			return explode(",", $this->$field);
+		if($this->{$field}) {
+			return explode(",", $this->{$field});
 		}
 		else {
 			return null;
