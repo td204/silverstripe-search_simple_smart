@@ -226,20 +226,34 @@ class SearchEngineSearchRecord extends DataObject implements Flushable {
 					$whereArray[] = "\"Keyword\" LIKE '".$innerKeyword."%'";
 				}
 			}
-			if(count($whereArray)) {
-				$where = "(".
+
+            if(count($whereArray)) {
+                $where = "(".
 					implode(") OR (", $whereArray).
 					")";
 				$keywords = SearchEngineKeyword::get()
 					->where($where)
 					->exclude(array("ID" => $selectArray))
-					->limit(5);
+					//->limit(5)
+                ;
 				$selectArray +=  $keywords->map("ID", "ID")->toArray();
 				foreach($selectArray as $id) {
 					$this->SearchEngineKeywords()->add($id, array("KeywordPosition" => $realPosition));
 				}
 			}
-		}
+
+            // exact match keywords need to be included as well, without limit
+            foreach($keywordsAfterFindReplace as $innerPosition => $innerKeyword) {
+                $keywords = SearchEngineKeyword::get()
+                    ->filter('Keyword', $innerKeyword)
+                    ->exclude(array("ID" => $selectArray));
+                $selectArray +=  $keywords->map("ID", "ID")->toArray();
+                foreach($selectArray as $id) {
+                    $this->SearchEngineKeywords()->add($id, array("KeywordPosition" => $realPosition));
+                }
+            }
+
+        }
 	}
 
 	/**

@@ -179,7 +179,7 @@ class SearchEngineDataObject extends DataObject {
 		$classes = ClassInfo::subclassesFor("DataObject");
 		$array = array();
 		foreach($classes as $className) {
-			if(!in_array($className, Config::inst()->get("SearchEngineDataObject", "classes_to_exclude"))) {
+			if(!in_array($className, SearchEngineMakeSearchable::getExcludedClasses())) {
 				if($className::has_extension("SearchEngineMakeSearchable")){
 					if(isset(self::$_object_class_name[$className])) {
 						$objectClassName = $_object_class_name[$className];

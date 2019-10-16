@@ -67,7 +67,8 @@ class SearchEngineSortByRelevance extends SearchEngineSortByDescriptor {
 			//look for complete phrase if there is more than one word.
 			//exact full match of search phrase using relevance, level 1 first
 			//and further upfront in text as second sort by.
-			if(count(explode(" ",$searchRecord->Phrase) > 1)) {
+            $parts = explode(" ",$searchRecord->Phrase);
+			if(count($parts) > 1) {
 				$sql = '
 					SELECT
 						"SearchEngineDataObjectID" AS ItemID,

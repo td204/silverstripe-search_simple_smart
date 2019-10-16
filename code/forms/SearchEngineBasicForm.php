@@ -50,6 +50,9 @@ class SearchEngineBasicForm extends Form {
 	 */
 	protected $start = 0;
 
+	/** @var string  */
+	protected $results = '';
+
 	/**
 	 *
 	 * @var Int
@@ -122,7 +125,15 @@ class SearchEngineBasicForm extends Form {
 		if(isset($_GET["SearchEngineKeywords"])) {
 			$this->keywords = $_GET["SearchEngineKeywords"];
 		}
-		$fields = new FieldList(
+
+        if ($numberResults = Config::inst()->get("SearchEngineBasicForm", "number_results")) {
+            $this->numberOfResultsPerPage = $numberResults;
+        }
+        if ($isMoreDetailsResult = Config::inst()->get("SearchEngineBasicForm", "more_details")) {
+            $this->isMoreDetailsResult = $isMoreDetailsResult;
+        }
+
+        $fields = new FieldList(
 			$keywordField = TextField::create('SearchEngineKeywords', _t("SearchEngineBasicForm.KEYWORDS", "Search for ..."), $this->keywords)
 		);
 		$keywordField->setAttribute("placeholder", _t("SearchEngineBasicForm.WHAT_ARE_YOU_LOOKING_FOR", "What are you looking for ..."));
@@ -186,11 +197,12 @@ class SearchEngineBasicForm extends Form {
 					$this->resultsCompleted = true;
 					$results = $this->workOutResults($_GET);
 				}
+
+				if (!empty($results)) {
+				    $this->setResults($results);
+                }
+
 			}
-			$this->Fields()->push(LiteralField::create(
-				'SearchEngineResultsHolderOuter',
-				"<div id=\"SearchEngineResultsHolderOuter\">".$results."</div>"
-			));
 			if($this->Config()->jquery_source) {
 				Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 			}
@@ -492,6 +504,22 @@ class SearchEngineBasicForm extends Form {
 		$this->updateBrowserHistory = $b;
 		return $this;
 	}
+
+    /**
+     * @return string
+     */
+    public function getResults(): string
+    {
+        return $this->results;
+    }
+
+    /**
+     * @param string $results
+     */
+    public function setResults(string $results): void
+    {
+        $this->results = $results;
+    }
 
 
 }

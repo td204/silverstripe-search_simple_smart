@@ -47,10 +47,10 @@ class SearchEngineRemoveAll extends BuildTask {
 		$tables = DB::getConn()->tableList();
 		foreach($tables as $table) {
 			if(in_array($table, $allTables)) {
-				DB::alteration_message("Drop \"$table\"", "deleted");
+				DB::alteration_message("Clear TABLE \"$table\"", "deleted");
 				if(method_exists(DB::getConn(), 'clearTable')) {
-					@DB::query("DROP \"$table\"");
-					DB::getConn()->clearTable($table);
+                    DB::getConn()->clearTable($table);
+                    //@DB::query("DROP TABLE \"$table\"");
 				}
 				else {
 					DB::query("TRUNCATE \"$table\"");

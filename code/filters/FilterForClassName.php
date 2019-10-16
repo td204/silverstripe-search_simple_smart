@@ -36,7 +36,7 @@ class SearchEngineFilterForClassName extends SearchEngineFilterForDescriptor {
 	public function getFilterList(){
 		$array = array();
 		$filterArray = SearchEngineDataObject::searchable_class_names();
-		$exclude = Config::inst()->get("SearchEngineDataObject", "classes_to_exclude");
+		$exclude = SearchEngineMakeSearchable::getExcludedClasses();
 		if(!is_array($exclude)) {
 			$exclude = array();
 		}
