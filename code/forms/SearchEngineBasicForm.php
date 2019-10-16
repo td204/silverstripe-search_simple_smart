@@ -130,7 +130,7 @@ class SearchEngineBasicForm extends Form {
 		$keywordField->setAttribute("autocomplete", "off");
 
 		$actions = new FieldList(
-			FormAction::create('doSubmitForm', 'Search')
+			FormAction::create('doSubmitForm', _t("SearchEngineBasicForm.Search", "Search"))
 		);
 
 		parent::__construct($controller, $name, $fields, $actions);
