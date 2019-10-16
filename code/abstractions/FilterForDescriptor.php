@@ -7,7 +7,7 @@
  *
  */
 
-abstract class SearchEngineFilterForDescriptor extends Object {
+abstract class SearchEngineFilterForDescriptor extends SS_Object {
 
 	/**
 	 * returns the name - e.g. "Pages Only", "Files Only"

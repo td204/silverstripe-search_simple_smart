@@ -30,7 +30,7 @@
  *
  */
 
-class SearchEngineProvider_MYSQLFullText extends Object implements SearchEngineSearchEngineProvider {
+class SearchEngineProvider_MYSQLFullText extends SS_Object implements SearchEngineSearchEngineProvider {
 
 	/*
 	 * @var array

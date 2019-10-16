@@ -1,7 +1,7 @@
 <?php
 
 
-class SearchEngineCoreSearchMachine extends Object {
+class SearchEngineCoreSearchMachine extends SS_Object {
 
 	/**
 	 * class used to provide the raw results

@@ -7,7 +7,7 @@
  *
  */
 
-abstract class SearchEngineSortByDescriptor extends Object {
+abstract class SearchEngineSortByDescriptor extends SS_Object {
 
 
 	/**
