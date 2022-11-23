@@ -361,10 +361,12 @@ class SearchEngineSearchRecord extends DataObject implements Flushable
             foreach($keywordsAfterFindReplace as $innerPosition => $innerKeyword) {
                 $keywords = SearchEngineKeyword::get()
                     ->filter('Keyword', $innerKeyword)
-                    ->exclude(array("ID" => $selectArray));
+                    ->exclude(["ID" => $selectArray]);
                 $selectArray +=  $keywords->map("ID", "ID")->toArray();
                 foreach($selectArray as $id) {
-                    $this->SearchEngineKeywords()->add($id, array("KeywordPosition" => $realPosition));
+                    if ($id) {
+                        $this->SearchEngineKeywords()->add($id, array("KeywordPosition" => $realPosition));
+                    }
                 }
             }
 
