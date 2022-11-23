@@ -65,9 +65,7 @@ class SearchEngineContentControllerExtension extends Extension
     {
         $this->SearchEngineClearHistoryID();
         if (! $this->_mySearchEngineSuperBasicForm) {
-            $this->_mySearchEngineSuperBasicForm = SearchEngineBasicForm::create($this->owner, 'SearchEngineSuperBasicForm')
-                ->setIsMoreDetailsResult(true)
-            ;
+            $this->_mySearchEngineSuperBasicForm = SearchEngineBasicForm::create($this->owner, 'SearchEngineSuperBasicForm');
         }
 
         return $this->_mySearchEngineSuperBasicForm;

@@ -171,6 +171,13 @@ class SearchEngineBasicForm extends Form
 
         parent::__construct($controller, $name, $fields, $actions);
 
+        if ($number = Config::inst()->get(self::class, 'number_results')) {
+            $this->setNumberOfResultsPerPage($number);
+        }
+        if ($more = Config::inst()->get(self::class, 'more_details')) {
+            $this->setIsMoreDetailsResult($more);
+        }
+
         $this->setFormMethod('GET');
         $this->setAttribute('autocomplete', 'false');
         $this->disableSecurityToken();
