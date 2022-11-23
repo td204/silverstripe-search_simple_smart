@@ -3,6 +3,7 @@
 namespace Sunnysideup\SearchSimpleSmart\Forms;
 
 use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
@@ -463,7 +464,7 @@ class SearchEngineBasicForm extends Form
         $fullResultsLink = '';
         $fullResultsClassName = (string) Config::inst()->get(self::class, 'full_results_page_type');
         if ($fullResultsClassName) {
-            if ($this->Controller()->dataRecord->ClassName !== $fullResultsClassName) {
+            if (Controller::curr()->data()->ClassName !== $fullResultsClassName) {
                 if (is_subclass_of($fullResultsClassName, SiteTree::class)) {
                     $obj = DataObject::get_one($fullResultsClassName);
                     if ($obj) {

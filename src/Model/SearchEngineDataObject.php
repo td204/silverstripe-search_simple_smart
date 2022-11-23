@@ -329,7 +329,7 @@ class SearchEngineDataObject extends DataObject
     public function SourceObject(): ?DataObject
     {
         $key = $this->getSearchEngineKey();
-        if (! isset(self::$_source_objects[$key])) {
+        if (empty(self::$_source_objects[$key])) {
             $className = $this->DataObjectClassName;
             if ($className && class_exists($className)) {
                 $id = $this->DataObjectID;
@@ -339,7 +339,7 @@ class SearchEngineDataObject extends DataObject
             }
         }
 
-        return self::$_source_objects[$key];
+        return self::$_source_objects[$key] ?? null;
     }
 
     public function SourceObjectExists(): bool

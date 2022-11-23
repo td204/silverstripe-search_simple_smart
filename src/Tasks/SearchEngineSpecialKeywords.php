@@ -43,7 +43,7 @@ class SearchEngineSpecialKeywords extends SearchEngineBaseTask
      */
     public function run($request)
     {
-        header('Content-Type: text/html; charset=utf-8');
+        //header('Content-Type: text/html; charset=utf-8');
         $this->runStart($request);
 
         $count = SearchEngineKeyword::get()->count();

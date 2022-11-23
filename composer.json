@@ -19,6 +19,11 @@
             "name": "Nicolaas Francken",
             "email": "modules@sunnysideup.co.nz",
             "role": "lead developer"
+        },
+        {
+            "name": "Terry Duivesteijn",
+            "email": "terry@loungeroom.nl",
+            "role": "contributor"
         }
     ],
     "require": {
