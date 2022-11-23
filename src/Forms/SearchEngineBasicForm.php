@@ -166,7 +166,7 @@ class SearchEngineBasicForm extends Form
         );
 
         $actions = new FieldList(
-            FormAction::create('doSubmitForm', 'Search')
+            FormAction::create('doSubmitForm', _t("SearchEngineBasicForm.SEARCH", "Search"))
         );
 
         parent::__construct($controller, $name, $fields, $actions);

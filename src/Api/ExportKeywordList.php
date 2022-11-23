@@ -38,25 +38,29 @@ class ExportKeywordList
                     //do nothing
                 }
 
-                if (Security::database_is_ready()) {
-                    $rows = DB::query('SELECT "Keyword" FROM "SearchEngineKeyword" ORDER BY "Keyword";');
-                    $array = [];
-                    foreach ($rows as $row) {
-                        $array[] = str_replace("'", '', Convert::raw2js($row['Keyword']));
-                    }
+                $connection = DB::get_conn();
+                $schema = $connection->getSchemaManager();
+                if ($schema->hasTable('SearchEngineKeyword')) {
+                    if (Security::database_is_ready()) {
+                        $rows = DB::query('SELECT "Keyword" FROM "SearchEngineKeyword" ORDER BY "Keyword";');
+                        $array = [];
+                        foreach ($rows as $row) {
+                            $array[] = str_replace("'", '', Convert::raw2js($row['Keyword']));
+                        }
 
-                    $written = 0;
-                    $fh = fopen($fileName, 'w');
-                    if ($fh) {
-                        $written = fwrite($fh, "SearchEngineInitFunctions.keywordList = ['" . implode("','", $array) . "'];");
-                        fclose($fh);
-                    }
+                        $written = 0;
+                        $fh = fopen($fileName, 'w');
+                        if ($fh) {
+                            $written = fwrite($fh, "SearchEngineInitFunctions.keywordList = ['" . implode("','", $array) . "'];");
+                            fclose($fh);
+                        }
 
-                    if (0 === (int) $written) {
-                        user_error('Could not write keyword list to $fileName', E_USER_NOTICE);
-                    }
+                        if (0 === (int)$written) {
+                            user_error('Could not write keyword list to $fileName', E_USER_NOTICE);
+                        }
 
-                    return 'Writing: <br />' . implode('<br />', $array);
+                        return 'Writing: <br />' . implode('<br />', $array);
+                    }
                 }
             } else {
                 return 'no file name specified';

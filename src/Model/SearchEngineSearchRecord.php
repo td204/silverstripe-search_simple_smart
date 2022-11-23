@@ -356,6 +356,18 @@ class SearchEngineSearchRecord extends DataObject implements Flushable
                     }
                 }
             }
+
+            // exact match keywords need to be included as well, without limit
+            foreach($keywordsAfterFindReplace as $innerPosition => $innerKeyword) {
+                $keywords = SearchEngineKeyword::get()
+                    ->filter('Keyword', $innerKeyword)
+                    ->exclude(array("ID" => $selectArray));
+                $selectArray +=  $keywords->map("ID", "ID")->toArray();
+                foreach($selectArray as $id) {
+                    $this->SearchEngineKeywords()->add($id, array("KeywordPosition" => $realPosition));
+                }
+            }
+
         }
     }
 
