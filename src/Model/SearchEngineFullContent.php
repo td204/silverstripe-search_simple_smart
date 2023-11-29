@@ -231,6 +231,7 @@ class SearchEngineFullContent extends DataObject
      */
     public static function clean_content($content)
     {
+        $content = $content ?? '';
         $content = strtolower($content);
 
         //important!!!! - create space around tags ....
