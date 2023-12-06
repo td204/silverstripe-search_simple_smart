@@ -218,7 +218,7 @@ class SearchEngineFullContent extends DataObject
      */
     public function getShortContent()
     {
-        return substr($this->Content, 0, 50);
+        return substr($this->Content ?? '', 0, 50);
     }
 
     /**
@@ -332,7 +332,7 @@ class SearchEngineFullContent extends DataObject
         if ($item) {
             //todo: turn Content into Keywords
             //1. take full content.
-            $content = $this->Content;
+            $content = $this->Content ?? '';
             //2. remove stuff that is not needed (e.g. strip_tags)
             $keywords = explode(' ', $content);
             foreach ($keywords as $keyword) {
